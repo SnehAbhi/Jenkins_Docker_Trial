@@ -1,0 +1,40 @@
+pipeline {
+   environment {
+       registryCredential = "dockerhub"
+       docker_repo_name = "snehabhi/nginx"
+       dockerImage = ''
+   }
+   agent any
+   stages {
+      stage('GitCheckOut'){
+        steps{
+            // git 'https://github.com/jglick/simple-maven-project-with-tests.git'
+            git 'https://github.com/SnehAbhi/Jenkins_Docker_Trial.git'
+        }
+      }
+      stage('BuildDockerImage'){
+         steps {
+             script {
+                 dockerImage = docker.build docker_repo_name + ":$BUILD_NUMBER"
+             }
+          }
+      }
+      stage('PushImage'){
+         steps{
+           script {
+               // Push Image on docker hub if build is successful
+           //withDockerRegistry(credentialsId: 'dockerhub', url: 'https://hub.docker.com/')           // some block
+           //dockerImage.push()
+           docker.withRegistry( '', registryCredential ) {
+           dockerImage.push()
+              }
+            }
+           }
+           post{
+               success{
+                   sh "docker rmi $docker_repo_name:$BUILD_NUMBER"
+               }
+           }
+       }
+   }
+}
