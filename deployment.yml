@@ -1,0 +1,27 @@
+---
+- hosts: webservers
+  tasks:
+  - name: Remove Existing Container If Any
+    docker_container:
+      name: nginx
+      image: snehabhi/nginx:latest
+      state: absent
+
+  - name: Remove Existing Latest Image If any
+    docker_image:
+      state: absent
+      name: snehabhi/nginx
+      tag: latest
+      force: true
+
+  - name: Pull Latest image
+    docker_image:
+      name: snehabhi/nginx
+      tag: latest
+      source: pull
+
+  - name: Lanch New Container#
+    docker_container:
+      name: nginx
+      image: snehabhi/nginx:latest
+      ports: 32768:80
