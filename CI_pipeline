@@ -27,6 +27,7 @@ pipeline {
            //dockerImage.push()
            docker.withRegistry( '', registryCredential ) {
            dockerImage.push()
+           dockerImage.push('latest')
               }
             }
            }
@@ -36,5 +37,11 @@ pipeline {
                }
            }
        }
+      stage('Deploy'){
+        steps{
+           echo '> Deploying the application ...'
+           sshPublisher(publishers: [sshPublisherDesc(configName: 'Ansible Master', sshCredentials: [encryptedPassphrase: '{AQAAABAAAAAQr24/rYbLUVlt6qAVCwpkjNiOkPsQlmQjXQnuc3KuODw=}', key: '', keyPath: '/var/lib/jenkins/secrets/id_rsa', username: 'root'], transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ansible-playbook /opt/deploy/docker_prac/playbook.yml -vvv', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+          }
+      }
    }
 }
