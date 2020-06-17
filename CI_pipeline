@@ -34,6 +34,7 @@ pipeline {
            post{
                success{
                    sh "docker rmi $docker_repo_name:$BUILD_NUMBER"
+                   sh "docker rmi $docker_repo_name:latest"
                }
            }
        }
